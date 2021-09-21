@@ -1,30 +1,37 @@
+// ========================
+// ENVIRONMENT CONFIG START
+// ========================
+
 require('dotenv').config();
 
-//express
+// EXPRESS
 const express = require("express");
 const app = express();
 
-//css
+// CSS
 app.use(express.static("public"));
 
-//ejs
+// EJS
 const ejs = require("ejs");
 app.set('view engine', 'ejs');
 
-//body-parser
+// BODY-PARSER
 const bodyParser = require("body-parser");
 app.use(express.urlencoded({extended: true}));
 
-//express-session
+// EXPRESS-SESSION
 const session = require("express-session");
 
-//passport
+// PASSPORT
 const passport = require("passport");
 
-//passport-local-mongoose
+// PASSPORT-LOCAL-MONGOOSE
 const passportLocalMongoose = require("passport-local-mongoose");
 
-//express-sessions & passport setup
+// GOOGLE 0AUTH2
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+// EXPRESS-SESSIONS & PASSPORT CONFIG
 app.use(session({
   secret: process.env.PASSPORT_SECRET,
   resave: false,
@@ -34,47 +41,105 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//mongoose
+// MONGOOSE
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/userDB", {useNewUrlParser: true});
 
-//mongoose schema
+// MONGOOSE SCHEMA CONFIG
 const userSchema = new mongoose.Schema ({
   email: String,
-  password: String
+  password: String,
+  googleId: String
 });
 
-//passport-local-mongoose setup as plugin
+// PASSPORT-LOCAL-MONGOOSE PLUGIN SETUP
 userSchema.plugin(passportLocalMongoose);
 
-//mongoose model
+// MONGOOSE MODEL CONFIG
 const User = new mongoose.model("User", userSchema);
 
-// use static authenticate method of model in LocalStrategy
-passport.use(User.createStrategy());
+// PASSPORT COOKIE CONFIG serialization
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
-// use static serialize and deserialize of model for passport session support
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// GOOGLE OAUTH CONFIG
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/secrets"
+},
+function(accessToken, refreshToken, profile, done) {
+  console.log(profile);
+  User.findOne({googleId: profile.id }, function (err, user) {
+    if(err){
+      console.log(err);
+      return done(err);
+    }
+    // no error so proceed
+    if(!user){               // user found
+      const user = new User({
+        googleId: profile.id
+      });
+      user.save(function(err){
+        if(err) console.log(err, user);
+        return done(err,user);
+      });
+    } else{ // found user
+      return done(err, user);
+    }
+  });
+}
+));
 
-//routes
+// ======================
+// ENVIRONMENT CONFIG END
+// ======================
+
+// ==================
+// ROUTE CONFIG START
+// ==================
+
+// HOME GET ROUTE
 app.get("/", function(req, res){
   res.render("home");
 });
 
+// GOOGLE AUTH GET ROUTE 1
+app.get("/auth/google",
+  passport.authenticate("google", { scope: ["profile"]})
+);
+
+// GOOGLE AUTH GET ROUTE 2
+app.get("/auth/google/secrets", 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+  // Successful authentication, redirect secrets.
+  res.redirect('/secrets');
+});
+
+// LOGIN GET ROUTE
 app.get("/login", function(req, res){
   res.render("login");
 });
 
+// LOGOUT GET ROUTE
 app.get("/logout", function(req, res){
   req.logout();
   res.redirect("/");
 });
 
+// REGISTER GET ROUTE
 app.get("/register", function(req, res){
   res.render("register");
 });
 
+// SECRETS GET ROUTE
 app.get("/secrets", function(req, res){
   if(req.isAuthenticated()){
     res.render("secrets");
@@ -83,6 +148,7 @@ app.get("/secrets", function(req, res){
   }
 });
 
+// REGISTER POST ROUTE
 app.post("/register", function(req, res){
   User.register({username: req.body.username}, req.body.password, function(err, user){
     if(err){
@@ -96,6 +162,7 @@ app.post("/register", function(req, res){
   });
 });
 
+// LOGIN POST ROUTE
 app.post("/login", passport.authenticate("local", {
   successRedirect: "/secrets",
   failureRedirect: "/login",
@@ -109,7 +176,11 @@ app.post("/login", passport.authenticate("local", {
   }
 });
 
-//Server Host
+// ================
+// ROUTE CONFIG END
+// ================
+
+// SERVER HOST
 app.listen(3000, function() {
   console.log("Server started on port 3000");
 });
