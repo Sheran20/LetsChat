@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema ({
   email: String,
   password: String,
   googleId: String
+  //secret: String
 });
 
 // PASSPORT-LOCAL-MONGOOSE PLUGIN SETUP
@@ -57,6 +58,8 @@ userSchema.plugin(passportLocalMongoose);
 
 // MONGOOSE MODEL CONFIG
 const User = new mongoose.model("User", userSchema);
+
+passport.use(User.createStrategy());
 
 // PASSPORT COOKIE CONFIG serialization
 passport.serializeUser(function(user, done) {
@@ -67,6 +70,8 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
+
+// hi
 
 // GOOGLE OAUTH CONFIG
 passport.use(new GoogleStrategy({
@@ -82,7 +87,7 @@ function(accessToken, refreshToken, profile, done) {
       return done(err);
     }
     // no error so proceed
-    if(!user){               // user found
+    if(!user){
       const user = new User({
         googleId: profile.id
       });
@@ -148,6 +153,8 @@ app.get("/secrets", function(req, res){
   }
 });
 
+
+
 // REGISTER POST ROUTE
 app.post("/register", function(req, res){
   User.register({username: req.body.username}, req.body.password, function(err, user){
@@ -167,14 +174,7 @@ app.post("/login", passport.authenticate("local", {
   successRedirect: "/secrets",
   failureRedirect: "/login",
   failureFlash: false
-}), function(err) {
-  if(err){
-    console.log(err);
-    res.redirect("/login");
-  } else{
-    res.redirect("/login");
-  }
-});
+}));
 
 // ================
 // ROUTE CONFIG END

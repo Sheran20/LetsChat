@@ -13,3 +13,41 @@ body {
   color: #fff;
   background-color: #000;
 }
+
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 50%;
+}
+
+#login {
+  margin-top: 10px;
+}
+
+#register {
+  margin-top: 10px;
+}
+
+#googlebody {
+  text-align: center;
+}
+
+#googleblock{
+  font-family: "sans-serif";
+}
+
+#googleicon{
+  font-size: 30px;
+  background: #dd4b39;
+  color: white;
+  padding: 10px;
+  border-radius: 20%;
+  margin-bottom: 10px;
+}
+
+#googletext{
+  font-size: 20px;
+}
