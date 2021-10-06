@@ -148,15 +148,20 @@ app.get("/register", function(req, res){
 
 // SECRETS GET ROUTE
 app.get("/secrets", function(req, res){
-  User.find({"secret": {$ne: null}}, function(err, foundUsers){
-    if(err){
-      console.log(err);
-    } else{
-      if(foundUsers){
-        res.render("secrets", {usersWithSecrets: foundUsers});
+
+  if(req.isAuthenticated()){
+    User.find({secret: {$ne: null}}, function(err, foundUsers){
+      if(err){
+        console.log(err);
+      } else{
+        if(foundUsers){
+          res.render("secrets", {usersWithSecrets: foundUsers});
+        }
       }
-    }
-  });
+    });
+  } else{
+    res.redirect("/login");
+  }
 });
 
 // SUBMIT GET ROUTE
@@ -184,10 +189,8 @@ app.post("/register", function(req, res){
 
 // SUBMIT POST ROUTE
 app.post("/submit", function(req, res) {
+
   const submittedSecret = req.body.secret;
-
-  console.log(req.user.id);
-
   User.findById(req.user.id, function(err, foundUser) {
     if(err) {
       console.log(err);
