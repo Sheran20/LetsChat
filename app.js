@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema ({
   email: String,
   password: String,
   googleId: String,
-  secret: String
+  secrets: Array
 });
 
 // PASSPORT-LOCAL-MONGOOSE PLUGIN SETUP
@@ -78,7 +78,7 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:3000/auth/google/secrets"
 },
 function(accessToken, refreshToken, profile, done) {
-  // console.log(profile);
+  console.log(profile);
   User.findOne({googleId: profile.id }, function (err, user) {
     if(err){
       console.log(err);
@@ -87,7 +87,8 @@ function(accessToken, refreshToken, profile, done) {
     // no error so proceed
     if(!user){
       const user = new User({
-        googleId: profile.id
+        googleId: profile.id,
+        username: profile.displayName
       });
       user.save(function(err){
         if(err) console.log(err, user);
@@ -155,7 +156,8 @@ app.get("/secrets", function(req, res){
         console.log(err);
       } else{
         if(foundUsers){
-          res.render("secrets", {usersWithSecrets: foundUsers});
+          res.render("secrets", 
+          {usersWithSecrets: foundUsers});
         }
       }
     });
@@ -196,7 +198,7 @@ app.post("/submit", function(req, res) {
       console.log(err);
     } else{
       if (foundUser) {
-        foundUser.secret = submittedSecret;
+        foundUser.secrets.push(submittedSecret);
         foundUser.save(function(){
           res.redirect("/secrets");
         });
