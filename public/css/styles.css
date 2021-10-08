@@ -15,10 +15,6 @@ body {
   color: #fff;
 }
 
-#secrets-box {
-  max-width: 50%;
-}
-
 .post-user {
   text-align: left;
   font-weight: bold;
@@ -34,11 +30,23 @@ body {
   border-radius: 50%;
 }
 
+#secrets-box {
+  max-width: 50%;
+}
+
 #login {
   margin-top: 10px;
 }
 
+#logout-btn {
+  margin-top: 10px;
+}
+
 #register {
+  margin-top: 10px;
+}
+
+#submit-btn {
   margin-top: 10px;
 }
 

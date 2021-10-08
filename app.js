@@ -78,7 +78,7 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:3000/auth/google/secrets"
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log(profile);
+  // console.log(profile);
   User.findOne({googleId: profile.id }, function (err, user) {
     if(err){
       console.log(err);
