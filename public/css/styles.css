@@ -1,5 +1,5 @@
 body {
-  background-color: #E8ECEF;
+  background-color: #222;
 }
 
 .centered {
@@ -7,19 +7,122 @@ body {
     text-align: center;
 }
 
+h1{
+  color: white;
+}
+
+/* CHAT BOX END */
+
+.full-chat-block{
+  width: 100%;
+  background: white;
+  text-align: center;
+  overflow: auto;
+  scrollbar-width: none;
+  height: max-content;
+  transition: max-height 0.2s ease-out;
+  border-radius: 25px;
+  margin-top: 20px;
+}
+
+.outer-container{
+  min-height: 500px;
+  bottom: 0%;
+  position: relative;
+}
+
+.chat-container{
+  max-height: 500px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  scroll-behavior: smooth;
+  hyphens: auto;
+}
+
+.full-chat-block::-webkit-scrollbar{
+  display: none;
+}
+
+#chatbox{
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+/* CHAT BOX END*/
+
+/* USER INPUT START */
+
+.chat-bar-input-block{
+  display: flex;
+  /* float: left; */
+  box-sizing: border-box;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  background-color: rgb(215, 215, 215);
+  padding: 10px 10px 10px 10px;
+}
+
+.userInput{
+  width: 90%;
+}
+
+.input-box{
+  border: none;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 16px;
+  color: #000;
+  background-color: white;
+  outline: none;
+}
+
+#submit-btn {
+  border: none;
+  padding: 5px;
+  align-items: center;
+  display: flex;
+  justify-content: space-evenly;
+  box-sizing: border-box;
+  width: 10%;
+  float: right;
+  background-color: rgb(215, 215, 215);
+  font-size: 25px;
+}
+
+#submit-btn:hover{
+  opacity: 0.7;
+}
+
+/* USER INPUT END */
+
+/* MESSAGES */
 .secret-text-box{
   background-color: #000;
   border-radius: 25px;
-  font-size: 2rem;
+  font-size: 1.5rem;
   width: fit-content;
   color: #fff;
 }
 
+/* POSTER IDENTITY */
 .post-user {
   text-align: left;
   font-weight: bold;
   margin-top: 1%;
 }
+
+/* TEXT CONTAINER BOOSTRAP */
+#secrets-box {
+  max-width: 70%;
+}
+
+/* BUTTONS */
 
 .fa {
   padding: 20px;
@@ -28,10 +131,6 @@ body {
   text-align: center;
   text-decoration: none;
   border-radius: 50%;
-}
-
-#secrets-box {
-  max-width: 50%;
 }
 
 #login {
@@ -43,10 +142,6 @@ body {
 }
 
 #register {
-  margin-top: 10px;
-}
-
-#submit-btn {
   margin-top: 10px;
 }
 
