@@ -2,6 +2,16 @@ body {
   background-color: #222;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  padding: 20px;
+}
+
 .centered {
     padding-top: 200px;
     text-align: center;
@@ -139,7 +149,7 @@ h1{
 }
 
 #logout-btn {
-  margin-top: 10px;
+  margin: 10px;
 }
 
 #register {

@@ -43,7 +43,7 @@ app.use(passport.session());
 
 // MONGOOSE
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/userDB", {useNewUrlParser: true});
+mongoose.connect(process.env.DB_KEY);
 
 // MONGOOSE SCHEMA CONFIG
 const userSchema = new mongoose.Schema ({
@@ -53,11 +53,23 @@ const userSchema = new mongoose.Schema ({
   secrets: Array
 });
 
+const messageSchema = new mongoose.Schema ({
+  user: String,
+  content: String
+});
+
+const chatSchema = new mongoose.Schema ({
+  name: String,
+  messages: [messageSchema]
+});
+
 // PASSPORT-LOCAL-MONGOOSE PLUGIN SETUP
 userSchema.plugin(passportLocalMongoose);
 
 // MONGOOSE MODEL CONFIG
 const User = new mongoose.model("User", userSchema);
+const Message = new mongoose.model("Message", messageSchema);
+const Chat = new mongoose.model("Chat", chatSchema);
 
 passport.use(User.createStrategy());
 
@@ -105,6 +117,18 @@ function(accessToken, refreshToken, profile, done) {
 // ENVIRONMENT CONFIG END
 // ======================
 
+// ======================
+// HELPER FUNCTIONS
+// ======================
+
+// CLEAR CACHE
+function nocache(req, res, next) {
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  next();
+}
+
 // ==================
 // ROUTE CONFIG START
 // ==================
@@ -130,7 +154,7 @@ app.get("/auth/google/secrets",
 // LOGIN GET ROUTE
 app.get("/login", function(req, res){
   if(req.isAuthenticated()){
-    res.render("secrets");
+    res.redirect("/secrets");
   } else{
     res.render("login");
   }
@@ -139,7 +163,7 @@ app.get("/login", function(req, res){
 // LOGOUT GET ROUTE
 app.get("/logout", function(req, res){
   req.logout();
-  res.redirect("/");
+  res.redirect('/');
 });
 
 // REGISTER GET ROUTE
@@ -148,19 +172,20 @@ app.get("/register", function(req, res){
 });
 
 // SECRETS GET ROUTE
-app.get("/secrets", function(req, res){
+app.get("/secrets", nocache, function(req, res){
 
   if(req.isAuthenticated()){
-    User.find({secret: {$ne: null}}, function(err, foundUsers){
+    
+    Chat.findOne({name: "general"}, function (err, foundChat) {
       if(err){
         console.log(err);
       } else{
-        if(foundUsers){
-          res.render("secrets", 
-          {usersWithSecrets: foundUsers});
-        }
+        res.render("secrets",{
+          chat: foundChat
+        });
       }
     });
+
   } else{
     res.redirect("/login");
   }
@@ -189,8 +214,8 @@ app.post("/register", function(req, res){
   });
 });
 
-// SUBMIT POST ROUTE
-app.post("/submit", function(req, res) {
+// SECRETS POST ROUTE
+app.post("/secrets", function(req, res) {
 
   const submittedSecret = req.body.secret;
   User.findById(req.user.id, function(err, foundUser) {
@@ -198,13 +223,30 @@ app.post("/submit", function(req, res) {
       console.log(err);
     } else{
       if (foundUser) {
-        foundUser.secrets.push(submittedSecret);
-        foundUser.save(function(){
-          res.redirect("/secrets");
+
+        const message = new Message({
+          user: foundUser.username,
+          content: submittedSecret
+        });
+
+        foundUser.secrets.push(message);
+        foundUser.save();
+
+
+        Chat.findOne({name: "general"}, function (err, foundChat) {
+          if(err){
+            console.log(err);
+          } else{
+            foundChat.messages.push(message);
+            foundChat.save(function(){
+              res.redirect("/secrets");
+            });
+          }
         });
       }
     }
   });
+
 
 });
 
