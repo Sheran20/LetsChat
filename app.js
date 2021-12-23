@@ -55,6 +55,7 @@ const userSchema = new mongoose.Schema ({
 
 const messageSchema = new mongoose.Schema ({
   user: String,
+  date: String,
   content: String
 });
 
@@ -87,7 +88,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://letz-chatz.herokuapp.com/auth/google/secrets"
+  callbackURL: process.env.CALLBACK_URL
 },
 function(accessToken, refreshToken, profile, done) {
   // console.log(profile);
@@ -224,8 +225,10 @@ app.post("/secrets", function(req, res) {
     } else{
       if (foundUser) {
 
+        const date = new Date().toLocaleDateString();
         const message = new Message({
           user: foundUser.username,
+          date: date,
           content: submittedSecret
         });
 

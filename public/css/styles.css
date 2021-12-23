@@ -114,18 +114,26 @@ h1{
 
 /* MESSAGES */
 .secret-text-box{
+  align-items: center;
   background-color: #000;
   border-radius: 25px;
-  font-size: 1.5rem;
+  font-size: 20px;
   width: fit-content;
   color: #fff;
+  padding: 8px;
 }
+
+.secret-text-box p {
+  margin: 0;
+}
+
 
 /* POSTER IDENTITY */
 .post-user {
   text-align: left;
   font-weight: bold;
-  margin-top: 1%;
+  margin-top: 4%;
+  margin-bottom: 0;
 }
 
 /* TEXT CONTAINER BOOSTRAP */
@@ -175,4 +183,10 @@ h1{
 
 #googletext{
   font-size: 20px;
+}
+
+#date{
+  color: #222;
+  font-size: 12px;
+  font-weight: normal;
 }
