@@ -269,16 +269,15 @@ app.post("/login", passport.authenticate("local", {
 
 
 io.on("connection", (socket) => {
-  console.log("We in this bitch - Server"); 
+  console.log("Server connected"); 
   Chat.findOne({name: "general"}, function (err, foundChat) {
     if(err){
       console.log(err);
     } else{
-        console.log("Sent Messages List");
+      const newMessage = foundChat.messages;
+      socket.broadcast.emit("newMessage", newMessage);
     }
   });
-
-  socket.emit("messages", "This is the message list");
 
 });
 
