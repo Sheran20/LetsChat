@@ -8,6 +8,13 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 
+// SOCKET.IO
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+
 // CSS
 app.use(express.static("public"));
 
@@ -242,6 +249,8 @@ app.post("/secrets", function(req, res) {
           } else{
             foundChat.messages.push(message);
             foundChat.save(function(){
+              const newMessage = foundChat.messages;
+              io.emit("newMessage", newMessage);
               res.redirect("/secrets");
             });
           }
@@ -260,6 +269,19 @@ app.post("/login", passport.authenticate("local", {
   failureFlash: false
 }));
 
+
+io.on("connection", (socket) => {
+  console.log("Server connected"); 
+  // Chat.findOne({name: "general"}, function (err, foundChat) {
+  //   if(err){
+  //     console.log(err);
+  //   } else{
+  //     const newMessage = foundChat.messages;
+  //     socket.broadcast.emit("newMessage", newMessage);
+  //   }
+  // });
+});
+
 // ================
 // ROUTE CONFIG END
 // ================
@@ -269,6 +291,6 @@ let port = process.env.PORT;
 if (port == null || port == "") {
   port = 3000;
 }
-app.listen(port, function() {
+httpServer.listen(port, function() {
   console.log("Server has started successfully");
 });

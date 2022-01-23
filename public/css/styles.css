@@ -31,7 +31,7 @@ h1{
   scrollbar-width: none;
   height: max-content;
   transition: max-height 0.2s ease-out;
-  border-radius: 25px 25px 0px 0px;
+  border-radius: 25px 0px 0px 0px;
   margin-top: 20px;
 }
 
@@ -51,9 +51,9 @@ h1{
   hyphens: auto;
 }
 
-.full-chat-block::-webkit-scrollbar{
+/* .full-chat-block::-webkit-scrollbar{
   display: none;
-}
+} */
 
 #chatbox{
   padding-left: 10px;
