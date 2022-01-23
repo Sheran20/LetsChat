@@ -249,6 +249,8 @@ app.post("/secrets", function(req, res) {
           } else{
             foundChat.messages.push(message);
             foundChat.save(function(){
+              const newMessage = foundChat.messages;
+              io.emit("newMessage", newMessage);
               res.redirect("/secrets");
             });
           }
@@ -270,15 +272,14 @@ app.post("/login", passport.authenticate("local", {
 
 io.on("connection", (socket) => {
   console.log("Server connected"); 
-  Chat.findOne({name: "general"}, function (err, foundChat) {
-    if(err){
-      console.log(err);
-    } else{
-      const newMessage = foundChat.messages;
-      socket.broadcast.emit("newMessage", newMessage);
-    }
-  });
-
+  // Chat.findOne({name: "general"}, function (err, foundChat) {
+  //   if(err){
+  //     console.log(err);
+  //   } else{
+  //     const newMessage = foundChat.messages;
+  //     socket.broadcast.emit("newMessage", newMessage);
+  //   }
+  // });
 });
 
 // ================
