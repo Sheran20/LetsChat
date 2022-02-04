@@ -6,10 +6,10 @@
     <h1 class="display-3">Secrets</h1>
     <p class="secret-text">Make a post here!</p>
 
-    <form action="/submit" method="POST">
+    <form autocomplete="off" action="/submit" method="POST">
 
       <div class="form-group">
-        <input type="text" class="form-control text-center" name="secret" placeholder="What's your secret?">
+        <input type="text" class="form-control text-center" name="secret" placeholder="What's your secret?" autocomplete="off">
       </div>
       <button id="submit-btn" type="submit" class="btn btn-dark">Submit</button>
     </form>
